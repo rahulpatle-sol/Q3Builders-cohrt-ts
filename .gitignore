@@ -1,3 +1,4 @@
 node_modules/
-devwallet/
+dev-wallet/
 .env
+dev-wallet.json

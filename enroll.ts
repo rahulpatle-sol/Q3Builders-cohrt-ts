@@ -11,7 +11,7 @@ const MPL_CORE_PROGRAM_ID = new PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4
 
 //  Wallet setup
 const keypair = Keypair.fromSecretKey(new Uint8Array(wallet));
-const connection = new Connection("https://solana-devnet.g.alchemy.com/v2/A4n7tJP75oDaD4emFu7wcMBo6bEelthD", "confirmed");
+const connection =new Connection("https://api.devnet.solana.com", "confirmed");
 const provider = new AnchorProvider(connection, new Wallet(keypair), {
   commitment: "confirmed",
 });
@@ -32,6 +32,10 @@ const mintCollection = new
   PublicKey("5ebsp5RChCGK7ssRZMVMufgVZhd2kFbNaotcZ5UvytN2");
 
 const mintTs = Keypair.generate();
+const [authorityPda] = PublicKey.findProgramAddressSync(
+  [Buffer.from("collection"), mintCollection.toBuffer()],
+  program.programId
+);
 
 // (async () => {
 //   try {
@@ -89,7 +93,7 @@ const mintTs = Keypair.generate();
         account: account_key,
         mint: mintTs.publicKey,
         collection: mintCollection,
-        authority:keypair.publicKey,
+        authority:authorityPda,
         mpl_core_program: MPL_CORE_PROGRAM_ID,
         system_program: SYSTEM_PROGRAM_ID,
       })
@@ -100,4 +104,56 @@ https://explorer.solana.com/tx/${txhash}?cluster=devnet`);
   } catch (e) {
     console.error(`Oops, something went wrong: ${e}`);
   }
-})
+})()
+
+
+
+
+// // try{
+// //     const txhash = await program.methods
+// //   .submitTs()
+// //   .accountsPartial({
+// //     user: keypair.publicKey,
+// //     account: account_key,
+// //     mint: mintTs.publicKey, // This is PublicKey from createMint
+// //     collection: mintCollection,
+// //     authority: keypair.publicKey,
+// //     mpl_core_program: MPL_CORE_PROGRAM_ID,
+// //     system_program: SYSTEM_PROGRAM_ID,
+// //   })
+// //   .signers([keypair]) // Only keypair, not mintTs if using createMint
+// //   .rpc();
+// //   console.log(`summision done find your tx https://explorer.solana.com/tx/${txhash}?cluster=devnet`)
+// // }
+// // catch(e:any){
+// //    console.error("Submit failed:", e);
+// //   if (e.logs) console.error("Logs:\n" + e.logs.join("\n"));
+// // }
+// // }
+
+// // )();
+//  // 🧠 Keep it at top
+
+// (async () => {
+//   try {
+//     console.log("Submitting TS...");
+//     const txhash = await program.methods
+//       .submitTs()
+//       .accountsPartial({
+//         user: keypair.publicKey,
+//         account: account_key,
+//         mint: mintTs.publicKey,      // ✅ Using this mint
+//         collection: mintCollection,
+//         authority: keypair.publicKey,
+//         mpl_core_program: MPL_CORE_PROGRAM_ID,
+//         system_program: SYSTEM_PROGRAM_ID,
+//       })
+//       .signers([keypair, mintTs])    // ✅ Both signers included
+//       .rpc();
+
+//     console.log(`✅ Success: https://explorer.solana.com/tx/${txhash}?cluster=devnet`);
+//   } catch (e) {
+//     console.error("Submit failed:", e);
+//   }
+// })();
+
